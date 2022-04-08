@@ -4,20 +4,24 @@
 
 class Player : public Entity
 {
+	friend class Dog;
+
 public:
-	static sf::Clock delayTimer;
-	static sf::Clock playerAnimTimer;
+
+
 	static bool flipped;
 	Player(std::string ID);
 	~Player();
 
 	void Update();
-	inline const Entity* getDog() { if(dog != nullptr) return dog; }
-	sf::Vector2<float> destination;
+	inline const Entity* getDog() { return dog; }
+	//sf::Vector2<float> destination;
 
 private:
 	class Entity* dog;
 	sf::IntRect sourceRectImg;
+	static sf::Clock playerAnimTimer;
+	/*static sf::Clock delayTimer;*/
 
 	void AnimateMovement();
 	void HandleHorizontalFlipping();

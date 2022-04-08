@@ -6,7 +6,7 @@
 #ifndef CLOCK_PLAYER
 #define CLOCK_PLAYER
 
-sf::Clock Player::delayTimer;
+//sf::Clock Player::delayTimer;
 sf::Clock Player::playerAnimTimer;
 bool Player::flipped = true;
 
@@ -14,7 +14,7 @@ bool Player::flipped = true;
 
 Player::Player(std::string ID) : Entity::Entity(ID)
 {
-	dog = new Dog("dog");
+	dog = new Dog("dog", this);
 	dog->LoadTexture("Assets/DoggoSpriteSheet.png");
 	dog->scale(2.5, 2.5);
 	dog->updateCentre();
@@ -36,14 +36,15 @@ void Player::Update() {
 
 	AnimateMovement();
 	HandleHorizontalFlipping();
-	MakeDogFollow();
-	destination = direction;
+	//MakeDogFollow();
+	dog->Update();
+	//destination = direction;
 }
 
 void Player::AnimateMovement()
 {
 		//idle
-		if (magnitude == 0) {
+		if (Idling) {
 			
 			//facing down
 			if (isDown) sourceRectImg.top = 0;
@@ -54,9 +55,9 @@ void Player::AnimateMovement()
 			if (sourceRectImg.left >= 300)
 				sourceRectImg.left = 0;
 			else {
-				if (Player::playerAnimTimer.getElapsedTime().asSeconds() >= 0.5f) {
+				if (playerAnimTimer.getElapsedTime().asSeconds() >= 0.5f) {
 					sourceRectImg.left += 100;
-					Player::playerAnimTimer.restart();
+					playerAnimTimer.restart();
 				}
 
 			}
@@ -65,7 +66,7 @@ void Player::AnimateMovement()
 		}
 
 		//moving
-		else if (magnitude > 0) {
+		else {
 			//  left/right movement 
 			if (direction.x != 0.0f && std::abs(direction.x) > std::abs(direction.y)) {
 				isUp = false;
@@ -74,9 +75,9 @@ void Player::AnimateMovement()
 				sourceRectImg.top = 500;
 				if (sourceRectImg.left >= 500) sourceRectImg.left = 0;
 				else {
-					if (Player::playerAnimTimer.getElapsedTime().asSeconds() >= 0.25f) {
+					if (playerAnimTimer.getElapsedTime().asSeconds() >= 0.25f) {
 						sourceRectImg.left += 100;
-						Player::playerAnimTimer.restart();
+						playerAnimTimer.restart();
 					}
 				}
 
@@ -91,9 +92,9 @@ void Player::AnimateMovement()
 				sourceRectImg.top = 300;
 				if (sourceRectImg.left >= 800) sourceRectImg.left = 0;
 				else {
-					if (Player::playerAnimTimer.getElapsedTime().asSeconds() >= 0.25f) {
+					if (playerAnimTimer.getElapsedTime().asSeconds() >= 0.25f) {
 						sourceRectImg.left += 100;
-						Player::playerAnimTimer.restart();
+						playerAnimTimer.restart();
 					}
 				}
 
@@ -108,9 +109,9 @@ void Player::AnimateMovement()
 				sourceRectImg.top = 100;
 				if (sourceRectImg.left >= 800) sourceRectImg.left = 0;
 				else {
-					if (Player::playerAnimTimer.getElapsedTime().asSeconds() >= 0.25f) {
+					if (playerAnimTimer.getElapsedTime().asSeconds() >= 0.25f) {
 						sourceRectImg.left += 100;
-						Player::playerAnimTimer.restart();
+						playerAnimTimer.restart();
 					}
 				}
 
@@ -141,15 +142,14 @@ void Player::HandleHorizontalFlipping()
 
 void Player::MakeDogFollow()
 {
-	//if dog is further than 300 pixels away
-	if (sqrt(pow((getPosition() - dog->getPosition()).x, 2) + pow((getPosition() - dog->getPosition()).y, 2)) > 300.0f) {
-		if (delayTimer.getElapsedTime().asSeconds() >= 1.5f) {
-			dog->MoveTo(getPosition());
-			delayTimer.restart();
-		}
-	}
-	else dog->MoveTo(dog->getPosition());
+	////if dog is further than 300 pixels away
+	//if (sqrt(pow((getPosition() - dog->getPosition()).x, 2) + pow((getPosition() - dog->getPosition()).y, 2)) > 300.0f) {
+	//	if (delayTimer.getElapsedTime().asSeconds() >= 1.5f) {
+	//		dog->MoveTo(getPosition());
+	//		delayTimer.restart();
+	//	}
+	//}
+	//
 
-	dog->Update();
 }
 

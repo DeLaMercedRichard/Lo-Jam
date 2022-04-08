@@ -11,8 +11,8 @@ Enemy::Enemy(std::string ID) : Entity::Entity(ID)
 {
 	sourceRectImage = sf::IntRect(0, 0, 100, 100);
 	setTextureRect(sourceRectImage);
-	maxSpeed = 60;
-	speed = 60;
+	maxSpeed = 30;
+	speed = 30;
 	isTriggered = false;
 	
 }
@@ -21,29 +21,44 @@ Enemy::~Enemy()
 {
 }
 
-void Enemy::Update(sf::Vector2<float> destination_)
+void Enemy::Update()
 {
-	destination = destination_;
+
 	Entity::Update();
 	Animate();
-	
+	HandleState();
+
 }
 
-void Enemy::SetPlayerPosition(sf::Vector2<float> position)
+void Enemy::HandleState() {
+	if (isTriggered && AIdelay.getElapsedTime().asSeconds() >= 0.5f) {
+		StartPatrolMovementTowardsTarget();
+		AIdelay.restart();
+	}
+
+	if (!isTriggered) MoveTo(getPosition());
+}
+
+void Enemy::SetPlayerPosition(sf::Vector2f position)
 {
 	playerPosition = position;
 }
 
 void Enemy::StartPatrolMovementTowardsTarget()
 {
+
 	//Distributes Values
-	std::normal_distribution<float> distributionX(playerPosition.x , 1000);
-	std::normal_distribution<float> distributionY(playerPosition.y , 1000);
-	//Ensures that destination is always towards target
-	destination.x = distributionX(pgenerator) + playerPosition.x - getPosition().x + destination.x;
-	destination.y = distributionY(pgenerator) + playerPosition.y - getPosition().y + destination.y;
+	std::normal_distribution<float> distributionX(playerPosition.x, 500);
+	std::normal_distribution<float> distributionY(playerPosition.y, 500);
+
 	
+	//Ensures that destination is always towards target
+	destination.x = distributionX(pgenerator) + playerPosition.x - getPosition().x;
+	destination.y = distributionY(pgenerator) + playerPosition.y - getPosition().y;
+	
+
 	MoveTo(destination);
+
 }
 
 bool Enemy::InView(Camera &camera_)
@@ -73,7 +88,7 @@ bool Enemy::InView(Camera &camera_)
 
 void Enemy::Animate()
 {
-	if (Enemy::timelapse.getElapsedTime().asSeconds() > 0.5f)
+	if (timelapse.getElapsedTime().asSeconds() > 0.5f)
 	{
 		if (isTriggered) //Evil Mode
 		{
@@ -83,9 +98,8 @@ void Enemy::Animate()
 				sourceRectImage.left = 0;
 			else
 				sourceRectImage.left += 100;
-			//--end if(sourceRectImage.left >= 500)
+
 			setTextureRect(sourceRectImage);
-			StartPatrolMovementTowardsTarget();
 		}
 		else // Good Mode 
 		{
@@ -94,11 +108,11 @@ void Enemy::Animate()
 				sourceRectImage.left = 0;
 			else
 				sourceRectImage.left += 100;
-			//--end if(sourceRectImage.left >= 300)
+
 			setTextureRect(sourceRectImage);
-			MoveTo(getPosition()); //Stop Movement
+			
 		}//--end if(isTriggered)
 
-		Enemy::timelapse.restart(); //Restart Clock for Frame Count
-	}//--end if(Enemy::timelapse.getElapsedTime().asSeconds() > 0.5f)
-}//--end Anime()
+		timelapse.restart(); //Restart Clock for Frame Count
+	}
+}

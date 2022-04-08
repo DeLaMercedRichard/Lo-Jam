@@ -1,11 +1,11 @@
 #include "Dog.h"
 
-Dog::Dog(std::string ID) : Entity::Entity(ID)
+Dog::Dog(std::string ID, Entity *owner_) : Entity::Entity(ID), owner(owner_)
 {
 	maxSpeed = 15.0f; 
 	sourceRectImg = sf::IntRect(0, 0, 100, 100);
 	setTextureRect(sourceRectImg);
-
+	following = true;
 }
 
 
@@ -15,14 +15,28 @@ Dog::~Dog()
 
 void Dog::Update() {
 	Entity::Update();
-	AnimateMovement();
+	
+	if (following) Follow();
+
+	Animate();
+
+
 }
 
-void Dog::AnimateMovement()
+void Dog::Follow() {
+	if (sqrt(pow((owner->getPosition() - getPosition()).x, 2) + pow((owner->getPosition() - getPosition()).y, 2)) > 300.0f) {
+		if (delayTimer.getElapsedTime().asSeconds() >= 1.5f) {
+			MoveTo(owner->getPosition());
+			delayTimer.restart();
+		}
+	}
+}
+
+void Dog::Animate()
 {
 	static bool flipped = false;
 	//idle
-	if (magnitude == 0) {
+	if (Idling) {
 		sourceRectImg.top = 0;
 
 		if (sourceRectImg.left >= 1000)
@@ -39,7 +53,7 @@ void Dog::AnimateMovement()
 	}
 
 	//moving
-	else if (magnitude > 0) {
+	else {
 		//  left/right movement 
 		
 			sourceRectImg.top = 100;

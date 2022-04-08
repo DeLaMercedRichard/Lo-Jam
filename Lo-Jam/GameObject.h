@@ -8,7 +8,6 @@ class GameObject: public sf::Sprite
 public:
 	std::string m_ID;
 	sf::Texture texture;
-	//sf::Sprite sprite;
 
 public:
 	virtual void InteractWith(GameObject &otherObject);
@@ -18,7 +17,7 @@ public:
 	virtual void Update();
 	inline std::string getID() { return m_ID; }
 	void LoadTexture(std::string filename);
-	inline void updateCentre() { setOrigin(getTextureRect().width / 2, getTextureRect().height / 2); }
+	inline void updateCentre() { setOrigin(getTextureRect().width / 2.0f, getTextureRect().height / 2.0f); }
 };
 
 #endif
